@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Implements hook_menu().
+ */
 function smsbao_menu() {
   $items['smsbao'] = array(
     'title' => 'smsbao',
@@ -19,29 +22,13 @@ function smsbao_menu() {
     'weight' => 50,
     'file' => 'smsbao.admin.inc',
   );
-  $items['smsbao/test'] = array(
-    'title' => 'smsbao form',
-    'description'=> 'smsbao test form',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('smsbao_test'),
-    'access arguments' => array('access administration pages'),
-    'type' => MENU_NORMAL_ITEM,
-    'file' => 'smsbao.admin.inc'
-  );
-  $items['smsbao/test_validate'] = array(
-    'title' => 'smsbao validate',
-    'page callback' => 'smsbao_validate_callback',
-    'access callback' => TRUE,
-    'type' => MENU_CALLBACK,
-    'file' => 'smsbao.page.inc',
-  );
 
   return $items;
 }
 
 /**
- *  Implement hook_element_info()
- *
+ * Implements hook_permission().
+ */
 function smsbao_permission() {
   return array(
     'administer smsbao module' => array(
@@ -50,6 +37,8 @@ function smsbao_permission() {
   );
 }
 
+/**
+ *  Implements hook_element_info().
  */
 function smsbao_element_info() {
   $path = drupal_get_path('module', 'smsbao');
@@ -97,8 +86,7 @@ function smsbao_field_validate($element, $form_state) {
 }
 
 /**
- *  Implement
- *  @return array
+ *  Implements hook_theme()
  */
 function smsbao_theme() {
   return array(
@@ -108,6 +96,9 @@ function smsbao_theme() {
   );
 }
 
+/**
+ * smsbao_field theme function
+ */
 function theme_smsbao_field($variables) {
   $element = $variables['element'];
   $element['#attributes']['type'] = 'text';
@@ -131,7 +122,6 @@ function theme_smsbao_field($variables) {
 
 /**
  * Implement hook_webform_component_info()
- * @return array
  */
 function smsbao_webform_component_info() {
   $components = array();

@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Administrative settings.
+ *
+ * @return
+ *   An array containing form items to place on the module settings page.
+ */
 function smsbao_settings() {
   $form['smsbao_username'] = array(
     '#title' => t('SMSbao Username'),
