@@ -40,6 +40,88 @@ function smsbao_menu() {
 }
 
 /**
+ *  Implement hook_element_info()
+ *
+ */
+function smsbao_element_info() {
+  $path = drupal_get_path('module', 'smsbao');
+
+  $types['smsbao_field'] = array(
+    '#input' => TRUE,
+    '#process' => array('smsbao_field_process'),
+    '#theme' => array('smsbao_field'),
+    '#theme_wrappers' => array('form_element'),
+    '#attached' => array(
+      'js' => array(
+        $path . '/smsbao_ajax.js'
+      )
+    ),
+    '#element_validate' => array('smsbao_field_validate'),
+    '#smsbao_field_attributes' => array(
+      'class' => array('form-text'),
+      'group_class' => array('group'),
+      'extra_button_class' => array('smsbao-getcode'),
+    )
+
+  );
+  return $types;
+}
+
+
+function smsbao_field_process($element, &$form_state) {
+  return $element;
+}
+
+
+function smsbao_field_validate($element, $form_state) {
+
+  $code = $element['#value'];
+
+  $formID = $form_state['build_info']['form_id'];
+
+  include_once drupal_get_path('module', 'smsbao')."/smsbao.page.inc" ;
+
+  if ( $code && sms_code_validate($formID, $code)) {
+    destroy_sms_code($formID);
+  } else {
+    form_set_error($element['#name'], t('invalid code'));
+  }
+}
+
+/**
+ *  Implement
+ *  @return array
+ */
+function smsbao_theme() {
+  return array(
+    'smsbao_field' => array(
+      'render element' => 'element',
+    )
+  );
+}
+
+function theme_smsbao_field($variables) {
+  $element = $variables['element'];
+  $element['#attributes']['type'] = 'text';
+
+  element_set_attributes($element, array('id', 'name', 'value', 'size', 'maxlength'));
+  _form_set_class($element, $element['#smsbao_field_attributes']['class']);
+  $extra_element_attributes = array();
+  $extra_element_attributes['type'] = 'button';
+  $extra_element_attributes['class'] = $element['#smsbao_field_attributes']['extra_button_class'];
+  $extra_element_attributes['value'] = t('Get Code');
+  $extra_element_attributes['data-binding-field'] = $element['#smsbao_field_attributes']['binding_field'];
+  $extra = '<input' . drupal_attributes($extra_element_attributes) . ' />';
+
+  $group_attributes = array();
+  $group_attributes['class'] = $element['#smsbao_field_attributes']['group_class'];
+
+
+  $output = '<input' . drupal_attributes($element['#attributes']) . ' />';
+  return  '<div'. drupal_attributes($group_attributes).'>'. $output . $extra . '</div>';
+}
+
+/**
  * Implement hook_webform_component_info()
  * @return array
  */
@@ -47,7 +129,7 @@ function smsbao_webform_component_info() {
   $components = array();
   $components['smsbao'] = array(
     'label'       => t('SMSbao validator'),
-    'description' => t('SMS validator button'),
+    'description' => t('SMS validator'),
     'features'    => array(
       // Add content to CSV downloads. Defaults to TRUE.
       'csv'           => FALSE,
@@ -81,100 +163,4 @@ function smsbao_webform_component_info() {
     'file'        => 'smsbao.components.inc',
   );
   return $components;
-}
-
-/**
- *  Implement hook_element_info()
- *
- */
-function smsbao_element_info() {
-  $path = drupal_get_path('module', 'smsbao');
-
-  $types['smsbao_field'] = array(
-    '#input' => TRUE,
-    '#process' => array('smsbao_field_process'),
-    '#theme' => array('smsbao_field'),
-    '#theme_wrappers' => array('form_element'),
-    '#attached' => array(
-      'js' => array(
-        $path . '/smsbao_ajax.js'
-      )
-    ),
-    '#element_validate' => array('smsbao_field_validate'),
-
-  );
-  return $types;
-}
-
-
-function smsbao_field_process($element, &$form_state) {
-//  $element['prefix'] = array(
-//    '#markup' => '<div class="smsbao_wrapper">'
-//  );
-  $element['smsbao_code'] = array(
-    '#type' => 'textfield',
-    '#size' => 6,
-//    '#prefix' => '<div class="smsbao_code">',
-//    '#suffix' => '</div>',
-//    '#theme_wrappers' => array(),
-    '#required' => TRUE
-  );
-//  $element['get_code'] = array(
-//    '#markup' => "<input type='button' class='smsbaoButton' value='" . t('Get Code') . "' />",
-//    '#prefix' => '<div class="smsbao_get_button">',
-//    '#suffix' => '</div>',
-//  );
-  $element['get_code'] = array(
-    '#type' => 'button',
-    '#value' => t('Get Code'),
-    '#attributes' => array(
-      'class' => array('btn-smsbao'),
-      'type' => 'button'
-    ),
-    );
-//  $element['suffix'] = array(
-//    '#markup' => '</div>'
-//  );
-  if (!isset($element['#attributes']['class'])) {
-    $element['#attributes']['class'] = array();
-  }
-
-  return $element;
-}
-
-function smsbao_form_alter(&$form, &$form_state, $form_id) {
-  // todo load settings for forms to add sms validation
-  if ($form_id == 'webform_client_form_68') {
-    // Simply add the additional validate handler.
-    dpm($form);
-    $form['smsbao'] = array(
-      '#type' => 'smsbao_field',
-      '#title' => t('Validation Code'),
-    );
-  }
-}
-
-
-function smsbao_field_validate($element, $form_state) {
-  global $user;
-
-  $code = $element['smsbao_code']['#value'];
-
-  $formID = $form_state['build_info']['form_id'];
-
-  include_once drupal_get_path('module', 'smsbao')."/smsbao.page.inc" ;
-
-  if ( $code && sms_code_validate($formID, $code)) {
-    destroy_sms_code($formID);
-  } else {
-    form_set_error($element['#name'], t('invalid code'));
-  }
-}
-
-function smsbao_theme() {
-  return array(
-    'smsbao_field' => array(
-      'render element' => 'element',
-    )
-  );
 }

@@ -6,7 +6,6 @@
 function _webform_defaults_smsbao() {
   return array(
     'name'      => '',
-    'form_key'  => 'smsbao',
     'required'  => 1,
     'mandatory' => 0,
     'pid'       => 0,
@@ -20,7 +19,7 @@ function _webform_defaults_smsbao() {
       'attributes'                 => array(),
       'description'                => '',
       'placeholder'                => '',
-      'binding_field'              => 'phone'
+      'binding_field'              => ''
     ),
   );
 }
@@ -29,26 +28,17 @@ function _webform_defaults_smsbao() {
 function _webform_edit_smsbao($component) {
   $form = array();
   $form['extra']['binding_field'] = array(
-    '#type' => 'smsbao_field',
+    '#type' => 'textfield',
     '#title' => t('binding field'),
     '#default_value' => $component['extra']['binding_field'],
+    '#description' => t("The name of the input element where the phone number come from"),
     '#required' => TRUE,
-  );
-  $form['value'] = array(
-    '#type'          => 'textfield',
-    '#title'         => t('Default value'),
-    '#default_value' => $component['value'],
-    '#description'   => t('The default value of the field.') . theme('webform_token_help'),
-    '#size'          => 60,
-    '#maxlength'     => 1024,
-    '#weight'        => 0,
   );
   $form['display']['width'] = array(
     '#type'          => 'textfield',
     '#title'         => t('Width'),
     '#default_value' => $component['extra']['width'],
     '#description'   => t('Width of the textfield.') . ' ' . t('Leaving blank will use the default size.'),
-    '#size'          => 5,
     '#maxlength'     => 10,
     '#weight'        => 0,
     '#parents'       => array( 'extra', 'width' ),
@@ -78,23 +68,24 @@ function _webform_edit_smsbao($component) {
  */
 function _webform_render_smsbao($component, $value = NULL, $filter = TRUE) {
   $form_item = array(
-    '#type'             => 'textfield',
+    '#type'             => 'smsbao_field',
     //    '#default_value'    => $filter ? webform_replace_tokens($component['value'], NULL, NULL, NULL, TRUE) : $component['value'],
-    '#default_value'    => $filter ? _webform_filter_values($component['value']) : $component['value'],
     '#attributes'       => $component['extra']['attributes'],
     '#theme_wrappers'   => array( 'webform_element' ),
-    //    '#description'      => $filter ? webform_filter_descriptions($component['extra']['description']) : $component['extra']['description'],
-    '#description'      => $filter ? _webform_filter_descriptions($component['extra']['description']) : $component['extra']['description'],
-//    '#element_validate' => array( 'webform_validate_smsbao' ), // todo how to define webform_validate_smsbao
-    '#maxlength'        => '',
+    '#description'      => $filter ? webform_filter_descriptions($component['extra']['description']) : $component['extra']['description'],
     '#required'         => $component['required'],
-    '#size'             => 17,
-    //    '#title'            => $filter ? webform_filter_xss($component['name']) : $component['name'],
-    '#title'            => $filter ? _webform_filter_xss($component['name']) : $component['name'],
+    '#title'            => $filter ? webform_filter_xss($component['name']) : $component['name'],
     '#title_display'    => $component['extra']['title_display'] ? $component['extra']['title_display'] : 'before',
     '#weight'           => $component['weight'],
     '#translatable'     => array( 'title', 'description' ),
+    '#smsbao_field_attributes' => array(
+      'class' => array('form-text'),
+      'group_class' => array('group'),
+      'extra_button_class' => array('smsbao-getcode'),
+    )
   );
+  // add bind-field to attributes, formatted as webform element naming style
+  $form_item['#smsbao_field_attributes']['binding_field'] = 'submitted['.$component['extra']['binding_field'].']';
   if ($component['required']) {
     $form_item['#attributes']['required'] = 'required';
   }

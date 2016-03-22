@@ -1,13 +1,13 @@
 (function($)  {
     jQuery().ready(function() {
         console.log('smsbao js loaded');
-        $('.btn-smsbao').click(function(e) {
+        $('.smsbao-getcode').click(function(e) {
             e.preventDefault();
-            console.log('button clicked');
+
             var button = e.target || e.srcElement;
             var form = button.form;
             var formID = form.elements['form_id'].value;
-            var phone = $(form).find('.for_smsbao')[0].value.trim();
+            var phone = form.elements[button.getAttribute('data-binding-field')].value.trim();
             if (phone == 0) {
                 alert("请输入手机号码");
                 return;
@@ -16,7 +16,6 @@
                 return;
             }
             var originText = button.value;
-            console.log(originText);
             button.setAttribute('disabled', 'disabled');
             CountDown(button, 60);
             function CountDown(element, total) {
