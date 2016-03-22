@@ -31,11 +31,12 @@
             }
 
             $.ajax({
-                url: '/smsbao',
+                url: '/',
                 content: form,
                 data: {
+                    'q': 'smsbao',
                     'formID' : formID,
-                    'phone': phone
+                    'phone': phone,
                 }
             }).done(function(data) {
                 console.log(data);
