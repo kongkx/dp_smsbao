@@ -1,0 +1,7 @@
+<?php
+function smsbao_uninstall() {
+  variable_del("smsbao_username");
+  variable_del("smsbao_password");
+  variable_del("smsbao_template");
+  variable_del("smsbao_valid_time");
+}
