@@ -1,4 +1,6 @@
 name = SMSbao
 description = SMS validation module for smsbao
 core = 7.x
-package = Others
+package = Other
+dependencies[] = webform
+configure = admin/config/system/smsbao
