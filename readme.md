@@ -9,15 +9,15 @@
 
 1. cd to modules folder
 
-```
-git clone https://github.com/kongkx/dp_smsbao smsbao
-```
+    ```
+    git clone https://github.com/kongkx/dp_smsbao smsbao
+    ```
 
 2. enable module
 
-```
-drush en smsbao -y
-```
+    ```
+    drush en smsbao -y
+    ```
 
 3. basic setup, browse to `?q=admin/config/system/smsbao` 
 
