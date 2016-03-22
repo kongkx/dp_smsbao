@@ -1,23 +1,18 @@
 <?php
 function smsbao_callback() {
 
+  $phone = $_GET['phone'] ? trim($_GET['phone']) : exit('no phone number');
+  $formID = $_GET['formID'] ? trim($_GET['formID']) : exit('no proper arguments');
+
   $smsbao_debug = variable_get('smsbao_debug');
-  $smsbao_username = variable_get('smsbao_username');
-  $smsbao_password = hash('md5', variable_get('smsbao_password'));
+
   $smsbao_valid_time = variable_get('smsbao_valid_time');
-  $valid_time_string = "有效期为".$smsbao_valid_time."分钟";
+  $valid_time_string = "(有效期为".$smsbao_valid_time."分钟)";
   $smsbao_template = variable_get('smsbao_template', '[kongkx]您的短信验证码是%s');
 
 
-
-  $phone = $_GET['phone'] ? trim($_GET['phone']) : 0000;
-  $formID = $_GET['formID'] ? trim($_GET['formID']) : exit('no proper arguments');
-
-
   $code = get_sms_code($formID);
-  $content = urlencode(sprintf($smsbao_template, $code). $valid_time_string);
 
-  $url_template = "http://api.smsbao.com/sms?u=%s&p=%s&m=%u&c=%s";
 
   if ($smsbao_debug) {
     $result = array(
@@ -28,8 +23,14 @@ function smsbao_callback() {
       'content' => sprintf($smsbao_template, $code)
     );
   } else {
+    $smsbao_username = variable_get('smsbao_username');
+    $smsbao_password = hash('md5', variable_get('smsbao_password'));
+    $content = urlencode(sprintf($smsbao_template, $code). $valid_time_string);
+    $url_template = "http://api.smsbao.com/sms?u=%s&p=%s&m=%u&c=%s";
+
     $url = sprintf($url_template, $smsbao_username, $smsbao_password, $phone, $content);
-    $return = file_get_contents($url);
+    $return = file_get_contents($url);  // 访问短信宝发送短信接口
+
     switch($return) {
       case '0':
         $result = array(
