@@ -14,7 +14,7 @@ function smsbao_menu() {
     'description' => 'Configure settings for SMSbao.',
     'page callback' => 'drupal_get_form',
     'page arguments'   => array('smsbao_settings'),
-    'access arguments' => array('access administration pages'),
+    'access arguments' => array('administer smsbao module'),
     'type' => MENU_NORMAL_ITEM,
     'weight' => 50,
     'file' => 'smsbao.admin.inc',
@@ -42,6 +42,14 @@ function smsbao_menu() {
 /**
  *  Implement hook_element_info()
  *
+function smsbao_permission() {
+  return array(
+    'administer smsbao module' => array(
+      'title' => t('Administer SMSbao module'),
+      'description' => t('Perform administration tasks for SMSbao module.'))
+  );
+}
+
  */
 function smsbao_element_info() {
   $path = drupal_get_path('module', 'smsbao');

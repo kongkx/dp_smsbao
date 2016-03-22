@@ -5,13 +5,11 @@ function smsbao_settings() {
     '#title' => t('SMSbao Username'),
     '#type' => 'textfield',
     '#default_value' => variable_get('smsbao_username', ''),
-    '#required' => TRUE,
   );
   $form['smsbao_password'] = array(
     '#title' => 'password',
-    '#type' => 'textfield',
+    '#type' => 'password',
     '#default_value' => variable_get('smsbao_password', ''),
-    '#required' => TRUE,
   );
   $form['smsbao_template'] = array(
     '#title' => 'template',
@@ -33,31 +31,19 @@ function smsbao_settings() {
 }
 
 
-
-function smsbao_test() {
-  $form['#action'] = "/smsbao/test_validate";
-  $form['phone'] = array(
-    '#title' => t('Phone'),
-    '#type' => 'textfield',
-    '#default_value' => '',
-    '#required' => TRUE,
-  );
-  $form['code'] = array(
-    '#title' => t('Code'),
-    '#type' => 'smsbao_field',
-    '#required' => TRUE,
-  );
-  $form['submit'] = array(
-    '#type' => 'submit',
-    '#value' => 'submit'
-  );
-
-
-//  $form['another'] = array(
-//    '#title' => t('Another'),
-//    '#type' => 'textfield',
-//    '#default_value' => '',
-//    '#theme' => array('smsbao_custom')
-//  );
-  return $form;
+/**
+ * Validation for the administrative settings form.
+ *
+ * @param form
+ *   An associative array containing the structure of the form.
+ * @param form_state
+ *   A keyed array containing the current state of the form.
+ */
+function smsbao_settings_validate($form, &$form_state) {
+  if (empty($form_state['values']['smsbao_username'])) {
+    $form_state['values']['smsbao_password'] = '';
+  }
+  elseif (empty($form_state['values']['smsbao_password'])) {
+    unset($form_state['values']['smsbao_password']);
+  }
 }
