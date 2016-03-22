@@ -40,9 +40,7 @@
                 }
             }).done(function(data) {
                 console.log(data);
-                if (data.status === 'success') {
-                    alert(data.message);
-                }
+                alert(data.message);
             })
         });
     });
